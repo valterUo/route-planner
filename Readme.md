@@ -2,7 +2,7 @@
 
 ## Backround of the idea: 
 
-The Route Planner is an optional version of [HSL Reittiopas](https://www.reittiopas.fi/). Reittiopas is built with React and it uses [Digitransit](https://digitransit.fi/en/developers/apis/) open source database to calculate itinaries. The database is built with [GraphQL](http://graphql.org/) which is query language developed by Facebook. It automatically calculates itinaries between wanted destinations. Maps are created using Leaflet Javascript library. My aim is, more or less, use Digitransit to build a new "Reittiopas" so that it serves features that I have seen useful. HSL Reittiopas is not practical when you want to make fast searches and espesically on a small mobilephone screen. Also, Reittiops (and HSL page which is strongly connected to Reittiopas) is not very intutive once you have logged in there. My backend is mainly for logging purposes. Let see how I success.
+The Route Planner is an optional version of [HSL Reittiopas](https://www.reittiopas.fi/). Reittiopas is built with React and it uses [Digitransit](https://digitransit.fi/en/developers/apis/) open source database to calculate itinaries. The database is built with [GraphQL](http://graphql.org/) which is a query language developed by Facebook. It automatically calculates itinaries between wanted destinations. Maps are created using [Leaflet](http://leafletjs.com/) Javascript library. My aim is, more or less, to use Digitransit to build a new "Reittiopas" so that it serves features that I have seen useful in my every day life. HSL Reittiopas is not practical when you want to make fast searches and espesically using your mobilephone. Also, Reittiops (and HSL page which is strongly connected to Reittiopas) is not very intutive once you have logged in there. My backend is mainly for logging purposes. Let see how I success.
 
 ## Main features: 
 
@@ -35,3 +35,7 @@ The Route Planner is a lighter version of Reittiopas. It is meant to be used by 
 ## Working hours
 
 [Working hours](Workinghours.md)
+
+## Author
+
+Valter
