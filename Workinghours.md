@@ -2,4 +2,5 @@
 
 | Day | Duration | I did...  |
 | :----:|:-----| :-----|
-| 14.3. | 3    | I read about Digitransit and wrote plans | 
+| 14.3. | 3    | I read about Digitransit and wrote plans |
+| 15.3. | 6    | I build a search for the next busses from the given bus stop |

@@ -32,6 +32,10 @@ The Route Planner is a lighter version of Reittiopas. It is meant to be used by 
 
  There does not exist good mobile app for making searches in Reittiopas. There are several paid apps but they have bad recommendations in Apple store and Google Play. The next task would be create a simple app for making searches in public transport in HSL area. In fact, my original idea was to create a Telegram bot that uses Digitransit.
 
+## Product version
+
+You can find the very first version here: https://route-planner-ztnqdladow.now.sh/. It is build using [Zeit](https://zeit.co/).
+
 ## Working hours
 
 [Working hours](Workinghours.md)

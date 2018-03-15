@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'
+import SearchStops from './components/SearchStop'
 
 class App extends React.Component {
   constructor(props) {
@@ -12,8 +13,8 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>Alku.</div>
-    );
+      <SearchStops store = {this.props.store} />
+    )
   }
 }
 
