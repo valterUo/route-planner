@@ -19,7 +19,6 @@ class SearchStops extends React.Component {
             type: 'ADD_STOPS',
             stops: response.data.stops
           }))
-          console.log(this.props.store.getState())
       }
     
      handleStopChange = (event) => {
@@ -67,7 +66,7 @@ class SearchStops extends React.Component {
         <div></div>
         <div>{this.props.store.getState().schedules.name}</div>
         <div>
-          {this.props.store.getState().schedules.info.map(item => <div key={item.scheduledArrival}>{item.headsign}, {item.scheduledArrival}, {item.busNumber}</div>)}
+          {this.props.store.getState().schedules.info.map(item => <div key={item.scheduledArrival}>{item.headsign === null ? 'The last stop' : item.headsign}, {item.scheduledArrival}, {item.busNumber}</div>)}
         </div>
         </div>
       )

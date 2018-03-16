@@ -36,6 +36,8 @@ The Route Planner is a lighter version of Reittiopas. It is meant to be used by 
 
 You can find the very first version here: https://route-planner-ztnqdladow.now.sh/. It is build using [Zeit](https://zeit.co/).
 
+The second version is here https://route-planner-hqptmifcrr.now.sh.
+
 ## Working hours
 
 [Working hours](Workinghours.md)
