@@ -1,17 +1,15 @@
 import React from 'react'
-import {convertTime} from '../reducers/scheduleReducer'
+import {getTimefromDateWithoutSec, convertTimeFromSec} from '../converters/timeConverter'
 
 class PrintRoutes extends React.Component {
-    
 
     printRoutes() {
-        console.log(this.props.store.getState().routes)
         return(
             <div>
             {this.props.store.getState().routes.map(route => 
             <div key = {route.id}>
                 <div>----------------------------------</div>
-                <p>Walking distance: {route.walkDistance.toFixed(1)}. Total traveling time: {convertTime(route.duration)}</p>
+                <p>Walking distance: {route.walkDistance.toFixed(1)}. Total traveling time: {convertTimeFromSec(route.duration)}</p>
                 <table>
                     <tbody>
                         <tr>
@@ -25,11 +23,11 @@ class PrintRoutes extends React.Component {
                         {route.legs.map(leg =>
                         <tr key={leg.startTime}>
                             <th>{leg.from.name}</th>
-                            <th>{new Date(leg.startTime).toString()}</th>
+                            <th>{getTimefromDateWithoutSec(new Date(leg.startTime))}</th>
                             <th>{leg.mode}</th>
-                            <th>{leg.route===null ? 'Walking' : leg.route.shortName}</th>
+                            <th>{leg.route===null ? '' : leg.route.shortName}</th>
                             <th>{leg.to.name}</th>
-                            <th>{convertTime(Math.floor((leg.endTime - leg.startTime)/1000))}</th>
+                            <th>{convertTimeFromSec(Math.floor((leg.endTime - leg.startTime)/1000))}</th>
                         </tr>)}
                     </tbody>
                 </table>

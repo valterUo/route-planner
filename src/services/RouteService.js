@@ -45,4 +45,21 @@ const planRoute = async (fromPlace, fromLat, fromLon, toPlace, toLat, toLon, mod
     return response.data
 }
 
-export default {getAllStops, getStopById, getStopsByName, getBussesByStopID, planRoute}
+const getAllLines = async () => {
+    const fullQuery = {
+        query: "query {routes {id, shortName, longName, patterns {id, code}}}"
+    }
+    const response = await axios.post(baseUrl, fullQuery)
+    return response.data
+}
+
+const getPatternAndTimesBasedOnLine = async (code, numberOfDepartures) => {
+    const fullQuery = {
+        query: "query patterSearch ($id: String! $numberOfDepartures: Int!){pattern(id: $id) {id, name, stops {id, name, stopTimesForPattern(id: $id numberOfDepartures: $numberOfDepartures) {, scheduledArrival, realtimeArrival, arrivalDelay, scheduledDeparture, realtimeDeparture, departureDelay, realtime, realtimeState, serviceDay, headsign}}}}",
+        variables: {"id": code, "numberOfDepartures": numberOfDepartures}
+    }
+    const response = await axios.post(baseUrl, fullQuery)
+    return response.data
+}
+
+export default {getAllStops, getStopById, getStopsByName, getBussesByStopID, planRoute, getAllLines, getPatternAndTimesBasedOnLine}
