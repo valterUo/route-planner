@@ -62,4 +62,12 @@ const getPatternAndTimesBasedOnLine = async (code, numberOfDepartures) => {
     return response.data
 }
 
-export default {getAllStops, getStopById, getStopsByName, getBussesByStopID, planRoute, getAllLines, getPatternAndTimesBasedOnLine}
+const getAlerts = async () => {
+    const fullQuery = {
+        query: "query {alerts {id, alertDescriptionText}}"
+    }
+    const response = await axios.post(baseUrl, fullQuery)
+    return response.data
+}
+
+export default {getAllStops, getStopById, getStopsByName, getBussesByStopID, planRoute, getAllLines, getPatternAndTimesBasedOnLine, getAlerts}

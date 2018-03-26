@@ -12,9 +12,13 @@ Searches: An itinery from destination A to destination B, next busses that pass 
 
 Alerts and maps
 
+## Maps:
+
+Original Reittiopas uses Leaflet maps and the points of interest are added onto the map using Mapbox Vector Tiles. The maps are described [here](https://digitransit.fi/en/developers/apis/3-map-api/) in detail. I tried to implement the maps so that they do not need Leaflet at all but they would use only Mapbox. After all, this was harder task than I tought and I did not manage to complete it. So I learned to use Leaflet. While studying Leaflet and building maps, I invented and found out new features that I could add to the programm. The first additional feature would be a map that shows real-time trasnport for a given transport line. Besides that, I could add personal information about the user onto the map (home location, favoutie locations, favourite stops, favourite ticket sale booths, favourite routes...).
+
 ## Example of user experience: 
 
-user loggs in
+User loggs in
  
 -> the user sees next busses that pass his "Favourite bus stops" (and maybe also busses)
 

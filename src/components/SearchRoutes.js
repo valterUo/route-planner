@@ -26,12 +26,7 @@ class SearchRoutes extends React.Component {
       }
 
       componentDidMount() {
-        this.setState({date: getToday(), time: getTimefromDate(new Date())})
-        RouteService.getAllStops().then(response =>
-        this.props.store.dispatch({
-            type: 'ADD_ALL_STOPS',
-            stops: response.data.stops
-        }))
+        setInterval(() => {this.setState({date: getToday(), time: getTimefromDate(new Date())})}, 1000)
     }
 
       handleStopChange = (event) => {
@@ -176,7 +171,7 @@ class SearchRoutes extends React.Component {
                         <label htmlFor="time"> Time  </label>
                         <input id="time" name="time" type="time" value= {this.state.time} onChange={this.handleEventChanges}/>
                         <p></p>
-                        <label htmlFor="numItineraries">Number of routes (1–4): </label>
+                        <label htmlFor="numItineraries"> Number of routes (1–4): </label>
                         <input id="numItineraries" name = "numItineraries" type="number" value = {this.state.numItineraries} onChange={this.handleEventChanges} min="1" max="4"/>
                         <p></p>
                         <input type="submit" value="Search"/>

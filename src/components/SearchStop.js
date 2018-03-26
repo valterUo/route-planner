@@ -9,25 +9,28 @@ class SearchStops extends React.Component {
         }
       }
 
-    searchStops = (event) => {
-        event.preventDefault()
-        this.props.store.dispatch({
-          type: 'DELETE_SCHEDULE'
-        })
-        RouteService.getStopsByName(this.state.newStop).then(response => 
-            this.props.store.dispatch({
-            type: 'ADD_STOPS',
-            stops: response.data.stops
-          }))
+    searchStops = () => {
+      const filter = this.props.store.getState().filter.stop.toLowerCase()
+      if (filter === '') {
+          return []
+        }
+        const filteredStops = this.props.store.getState().allStops.filter(stop => stop.name.toLowerCase().includes(filter))
+        if(filteredStops.length < 20) {
+            return filteredStops
+        }
+        return null
       }
     
      handleStopChange = (event) => {
         this.setState({newStop: event.target.value})
+        this.props.store.dispatch({
+          type: 'NEW_FILTER_STOP',
+          filter: event.target.value
+        })
       }
     
-     showNextBusses = (event) => {
-      event.preventDefault()
-      RouteService.getBussesByStopID(event.target.value).then(response =>
+     showNextBusses = (gtfsId) => {
+      RouteService.getBussesByStopID(gtfsId).then(response =>
         this.props.store.dispatch({
           type: 'ADD_SCHEDULE',
           schedule: response.data.stop
@@ -35,40 +38,19 @@ class SearchStops extends React.Component {
      }
     
      render() {
-    if(this.props.store.getState().schedules.name === undefined) {
-        return (
-          <div>
-          <p>Search next busses for the given stop:</p>
-          <div>
-            <form onSubmit={this.searchStops}>
-            <input value={this.state.newStop} onChange={this.handleStopChange}/>
-            <button type="submit">Search</button>
-            </form>
-          </div>
-          <div>
-            {this.props.store.getState().stops.map(stop => <div key = {stop.id}> <div>{stop.name}, {stop.gtfsId}</div><button value = {stop.gtfsId} onClick={this.showNextBusses}>Info</button></div>)}
-          </div>
-          </div>
-        )
-      }
       return (
-        <div>
-        <p>Search next busses for the given stop:</p>
-        <div>
-          <form onSubmit={this.searchStops}>
-          <input value={this.state.newStop} onChange={this.handleStopChange}/>
-          <button type="submit">Search</button>
-          </form>
-        </div>
-        <div>
-          {this.props.store.getState().stops.map(stop => <div key = {stop.id}> <div>{stop.name}, {stop.gtfsId}</div><button value = {stop.gtfsId} onClick={this.showNextBusses}>Info</button></div>)}
-        </div>
-        <div></div>
-        <div>{this.props.store.getState().schedules.name}</div>
-        <div>
-          {this.props.store.getState().schedules.info.map(item => <div key={item.scheduledArrival}>{item.headsign === null ? 'The last stop' : item.headsign}, {item.scheduledArrival}, {item.busNumber}</div>)}
-        </div>
-        </div>
+          <div>
+            <p>Search next busses for the given stop:</p>
+            <form>
+              <input value={this.state.newStop} onChange={this.handleStopChange}></input>
+            </form>
+            {this.searchStops() === null ? "Too many mathes." : this.searchStops().map(stop => <div key = {stop.gtfsId} onClick={() => this.showNextBusses(stop.gtfsId)}>{stop.name}, {stop.gtfsId}</div>)}
+          <div></div>
+          <h4>{this.props.store.getState().schedules === undefined ? '' : this.props.store.getState().schedules.name}</h4>
+          <div>
+          {this.props.store.getState().schedules.info === undefined ? '' : this.props.store.getState().schedules.info.map(item => <div key={item.scheduledArrival}>{item.headsign === null ? 'The last stop' : item.headsign}, {item.scheduledArrival}, {item.busNumber}</div>)}
+          </div>
+        </div>      
       )
     }
 }
