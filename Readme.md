@@ -44,6 +44,8 @@ The second version is here https://route-planner-hqptmifcrr.now.sh.
 
 The third version: https://route-planner-itajhfkqaq.now.sh/.
 
+The latest version: https://route-planner2018.herokuapp.com/
+
 ## Working hours
 
 [Working hours](Workinghours.md)
