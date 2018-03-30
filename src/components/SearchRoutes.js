@@ -21,12 +21,18 @@ class SearchRoutes extends React.Component {
             rail: true,
             subway: true,
             tram: true,
-            ferry: true
+            ferry: true,
+            intervalId: 2
         }
       }
 
       componentDidMount() {
-        setInterval(() => {this.setState({date: getToday(), time: getTimefromDate(new Date())})}, 1000)
+        this.handleInterval()
+    }
+
+    handleInterval = () => {
+        const interval = setInterval(() => {this.setState({date: getToday(), time: getTimefromDate(new Date())})}, 1000)
+        this.setState({intervalId: interval})
     }
 
       handleStopChange = (event) => {
@@ -93,12 +99,14 @@ class SearchRoutes extends React.Component {
 
       handleEventChanges = (event) => {
         const target = event.target
+        if(target.type === 'time') {clearInterval(this.state.intervalId)}
         const value = target.type === 'checkbox' ? target.checked : target.value
         const name = target.name
         this.setState({[name]: value})
       }
 
-      searchPrevious = () => {          
+      searchPrevious = () => {
+        clearInterval(this.state.intervalId)          
         const timeAndDate = this.props.store.getState().routes[0].legs[0].startTime - 400000
         const d = new Date(timeAndDate)
         console.log(getTimefromDate(d))
@@ -108,6 +116,7 @@ class SearchRoutes extends React.Component {
       }
 
       searchNext = () => {
+        clearInterval(this.state.intervalId)
         const routes = this.props.store.getState().routes
         const legs = routes[routes.length - 1].legs
         const timeAndDate = legs[legs.length - 1].startTime + 300000
@@ -118,7 +127,10 @@ class SearchRoutes extends React.Component {
       }
 
       searchRoutes = (event) => {
-        if(event !== undefined) {event.preventDefault()}
+        if(event !== undefined) {
+            event.preventDefault()
+            this.handleInterval()
+        }
         let modes = 'WALK, '
         if(this.state.bus === true) {modes = modes +  'BUS,'}
         if(this.state.subway === true) {modes = modes +  'SUBWAY,'}
@@ -127,10 +139,15 @@ class SearchRoutes extends React.Component {
         if(this.state.tram === true) {modes = modes +  'TRAM,'}
         const {fromPlace, fromLat, fromLon, toPlace, toLat, toLon, date, time, numItineraries} = this.state
         RouteService.planRoute(fromPlace, fromLat, fromLon, toPlace, toLat, toLon, modes, date, time, numItineraries).then(response => 
-        this.props.store.dispatch({
-            type: 'ADD_ROUTES',
-            routes: response.data.plan.itineraries
-        }))
+            this.props.store.dispatch({
+                type: 'ADD_ROUTES',
+                routes: response.data.plan.itineraries
+            })//.then(() => {console.log( this.props.store.getState().routes[0]) })
+        )
+            /*this.props.store.dispatch({
+            type:'ADD_ROUTE_ON_MAP',
+            data: this.props.store.getState().routes[0]
+        }) console.log(this.props.store.getState().routes[0]))*/
       }
 
       render(){

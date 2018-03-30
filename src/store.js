@@ -6,6 +6,7 @@ import filterReducer from './reducers/filterReducer'
 import routeReducer from './reducers/routeReducer'
 import lineReducer from './reducers/lineReducer'
 import alertReducer from './reducers/alertReducer'
+import mapReducer from './reducers/mapReducer'
 
 const reducer = combineReducers({
     schedules: scheduleReducer,
@@ -13,7 +14,8 @@ const reducer = combineReducers({
     filter: filterReducer,
     routes: routeReducer,
     lines: lineReducer,
-    alerts: alertReducer
+    alerts: alertReducer,
+    map: mapReducer
   })
 
 const store = createStore(reducer, composeWithDevTools())

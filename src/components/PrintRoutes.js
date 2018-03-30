@@ -3,11 +3,22 @@ import {getTimefromDateWithoutSec, convertTimeFromSec} from '../converters/timeC
 
 class PrintRoutes extends React.Component {
 
+    componentDidMount() {
+        
+    }
+
+    addRouteToMap(route) {
+        this.props.store.dispatch({
+            type:'ADD_ROUTE_ON_MAP',
+            data: route
+        })
+    }
+
     printRoutes() {
         return(
             <div>
             {this.props.store.getState().routes.map(route => 
-            <div key = {route.id}>
+            <div key = {route.id} onClick={() => this.addRouteToMap(route)}>
                 <div>----------------------------------</div>
                 <p>Walking distance: {route.walkDistance.toFixed(1)}. Total traveling time: {convertTimeFromSec(route.duration)}</p>
                 <table>

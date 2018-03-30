@@ -34,7 +34,7 @@ class App extends React.Component {
       <p></p>
       <PrintRoutes store = {this.props.store} />
       <p></p>
-      <Map/>
+      <Map store = {this.props.store} />
       <p></p>
       <Alerts store = {this.props.store}/>
       </div>

@@ -4,59 +4,104 @@ import vectorGrid from 'leaflet.vectorgrid'
 import polyline from 'polyline'
 
 class Map extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+        }
+    }
 
     componentDidMount() {
       this.map()
     }
+
+    returnPointWithText(LatLng, text) {
+        return L.marker(LatLng).bindPopup(text)
+      }
+    
+      returnPolyline(polylineData) {
+        try{
+        const line = polyline.decode(polylineData)
+        const pointList = []
+          for (var i=0; i < line.length; i++) {
+              var point = new L.LatLng(line[i][0], line[i][1])
+              pointList[i] = point
+            }
+
+        const route = new L.Polyline(pointList, {
+          color: 'red',
+          weight: 3,
+          opacity: 0.5,
+          smoothFactor: 1.5
+        })
+        return route 
+      } catch(error) {
+        return 'Polyline decoding did not succeed.'
+        }
+      }
+
+    returnRouteLayers(legs) {
+        const routeLayer = L.featureGroup()
+        legs.forEach(leg => {
+            const point1 = this.returnPointWithText([leg.from.lat, leg.from.lon],leg.from.name === undefined ? 'Starting point.' : leg.from.name)
+            routeLayer.addLayer(point1)
+            const polyline = this.returnPolyline(leg.legGeometry.points)
+            routeLayer.addLayer(polyline)
+            const point2 = this.returnPointWithText([leg.to.lat, leg.to.lon], leg.to.name === undefined ? 'Ending point.' : leg.to.name)
+            routeLayer.addLayer(point2)
+        })
+        return routeLayer
+    }
   
     map() {
-        const map = L.map('map').setView([60.205499178, 24.958662832], 16)
-
+        const map = L.map('map').setView([60.205499178, 24.958662832], 14) //Kumpula
+        const stopsUrl = 'https://cdn.digitransit.fi/map/v1/hsl-stop-map/{z}/{x}/{y}.pbf'
+        const ticketSalesUrl = 'https://cdn.digitransit.fi/map/v1/hsl-ticket-sales-map/{z}/{x}/{y}.pbf'
+        const stopStyles = {stops: { fill: true, fillColor: "orange", weight: 1, color: 'purple', opacity: 0.85}}
+        const ticketSalesStyles = {ticketSales: {color: "blue", fill: true, fillColor: "blue"}}
+        const stopsLayer = L.vectorGrid.protobuf(stopsUrl, { vectorTileLayerStyles: stopStyles })
+        const ticketSalesLayer = L.vectorGrid.protobuf(ticketSalesUrl, { vectorTileLayerStyles: ticketSalesStyles })
+        var layersOnMap = L.featureGroup()
+        
         L.tileLayer('https://cdn.digitransit.fi/map/v1/{id}/{z}/{x}/{y}.png', {
           attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
               '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ',
-            id: 'hsl-map'}).addTo(map)
-    
-            const stopsUrl = 'https://cdn.digitransit.fi/map/v1/hsl-stop-map/{z}/{x}/{y}.pbf'
-            const ticketSalesUrl = 'https://cdn.digitransit.fi/map/v1/hsl-ticket-sales-map/{z}/{x}/{y}.pbf'
-    
-            const stopStyles = {stops: {fill: true,
-              weight: 1,
-              fillColor: '#0101DF',
-              color: '#10cccc',
-              fillOpacity: 0.2,
-              opacity: 0.4}}
+            id: 'hsl-map'})
+            .addTo(map)
 
-              const ticketSalesStyles = {stops: {fill: true,
-                weight: 1,
-                fillColor: '#FE2E64',
-                color: '#10cccc',
-                fillOpacity: 0.2,
-                opacity: 0.4}}
-    
-            const stopsLayer = L.vectorGrid.protobuf(stopsUrl, {
-              vectorTileLayerStyles: stopStyles})
-    
-            const ticketSalesLayer = L.vectorGrid.protobuf(ticketSalesUrl,  {
-                vectorTileLayerStyles: ticketSalesStyles})
-    
-            map.addLayer(stopsLayer)
-            map.addLayer(ticketSalesLayer)
-
-            const line = polyline.decode("wwfnJyjdwCXlAHLNfAFHDZz@nEh@hBXfA\\hAR^VLnChAD@HDHDjBt@^N|@`@JDHNFB`@RHDJFD@PD^fBDNNp@@JBPHl@FdA@d@@TFrCDnATpEL~CBnA@pADpELbQ?pB?nBC~@DdC?R?LDtC?P?j@@XG~@Ef@CPCHGHoAtAQT_@f@w@rAc@~@g@lAi@fBc@hBWvASzAWrBUtBQxBOtBMhCOvEEhCCfC@vB@fBDrCFlCJnCb@xIfFl_APdDr@dMd@bIV~D\\bFPnCjAtMt@~GxAhMlBfOz@jHVjCR~BNpCHrBFjCDdC?`CC`DIfDSxDUhDe@fFu@tHMzA{AlOcBtPCXE`@sCrY_BbPShCeAxJc@pDg@nECJi@~Di@dDUbAkA~Gk@bD_@vBUbB]lBe@lDY~B[rCWbC_@~DYfDW|BQ~Am@tGOfBOxAWlCKzAMvAIbAMpBIpAAd@GhACp@EhAEtAA~ACfCAnC@fA?rAClDC`G@`BCxHKlCMhIK~FE|CA~@@|@BxB@^?@DtAHbBLzALjBHbBFlAF|ADxAD|BNrEPjCTtHdAhVp@jSVlPFjJ?dC?hE?dJ?xC?vLDfKDpEF|CFnDPjHZvH\\xH|@jQXnF\\nFBXdAtSJtCZrG@^b@`K^dJLnDLtDj@bRT`IAb@?~@?dA@~A?fA?|@AjAE~BA`BBdABd@Bh@HfARnBPpBl@zFt@lGr@vE\\|Cz@dHrA|JdAtHPpAl@dEjA~I~AvNv@tIx@vKTtD`@nHTrENtDRzEPvHR|J\\`VNdKAjEFpLBlFDjCBfCFxBNjE`@nH@j@An@Cr@I^O^y@l@iAt@S@IAIGMKCICIKIKEI?MDILKVQVW^WVUPSJuAT??_ANaALg@No@ZkAz@a@ZKR]j@a@h@i@fA[f@Q`@u@dCmAvEw@dCk@nAe@z@S\\iAnAeA`Ai@f@eAfBy@rBu@rCMf@WfAU`Ac@`Bi@`CKh@ANUdBq@~GW|BQdAK^M\\IROVMLs@d@q@\\]P}@R{@BaA@_@Iu@E]?CAU?M?W@i@DKBg@NUDq@V}@^g@XQJk@h@EDQPeBnBIHILU\\")
-            const pointList = []
-            for (var i=0; i < line.length; i++) {
-                const point = new L.LatLng(line[i][0], line[i][1])
-                pointList[i] = point
+            map.on('zoomend', function () {
+                console.log(map.getZoom())
+                if(map.getZoom() > 15) {
+                  map.addLayer(stopsLayer)
+                  map.addLayer(ticketSalesLayer)
+                } else {
+                  map.removeLayer(stopsLayer)
+                  map.removeLayer(ticketSalesLayer)
                 }
-            const firstpolyline = new L.Polyline(pointList, {
-                color: 'red',
-                weight: 3,
-                opacity: 0.5,
-                smoothFactor: 1.5
-                })
-            firstpolyline.addTo(map);
+              })
+          
+              map.on('click', (event) => {
+                  this.props.store.dispatch({
+                      type: 'ADD_POINT_ON_MAP',
+                      data: event.latlng
+                  })
+            })
 
+            this.props.store.subscribe(() => {
+                if( this.props.store.getState().map.data !== undefined){
+                        if( this.props.store.getState().map.type === 'route') {
+                            layersOnMap.clearLayers()
+                            layersOnMap = this.returnRouteLayers(this.props.store.getState().map.data.legs)
+                            layersOnMap.addTo(map)
+                            map.fitBounds(layersOnMap.getBounds())
+                        } else if (this.props.store.getState().map.type === 'point') {
+                            const point = this.returnPointWithText([this.props.store.getState().map.data.lat, this.props.store.getState().map.data.lng], 'You are here.')
+                            layersOnMap.addLayer(point)
+                            console.log(layersOnMap)
+                            layersOnMap.addTo(map)
+                            map.fitBounds(layersOnMap.getBounds())
+                    }
+                }
+            })
         }
 
     render() {
