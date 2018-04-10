@@ -44,7 +44,7 @@ The second version is here https://route-planner-hqptmifcrr.now.sh.
 
 The third version: https://route-planner-itajhfkqaq.now.sh/.
 
-The latest version: https://route-planner2018.herokuapp.com/
+The latest version: https://route-planner2018.herokuapp.com/ (Everything is not working at the moment because of the error "Mixed Content: The page at 'https://route-planner2018.herokuapp.com/' was loaded over HTTPS, but requested an insecure XMLHttpRequest endpoint 'http://api.digitransit.fi/geocoding/v1/reverse?...")
 
 ## Working hours
 
