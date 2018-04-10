@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://api.digitransit.fi/geocoding/v1/reverse'
+const baseUrl = 'https://api.digitransit.fi/geocoding/v1/reverse'
 
 const getDestination = async (lat, lon, size) => {
     const url = baseUrl + `?point.lat=${lat}&point.lon=${lon}&size=${size}`
