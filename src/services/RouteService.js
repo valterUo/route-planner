@@ -27,10 +27,10 @@ const getStopsByName = async (name) => {
     return response.data
 }
 
-const getBussesByStopID = async (id) => {
+const getBussesByStopID = async (id, numberOfDepartures) => {
     const fullQuery = {
-        query: "query getBussesByStopID($input: String!){stop(id: $input){name, stoptimesWithoutPatterns {scheduledArrival, headsign, trip {id, route {id, shortName}}}}}",
-        variables: {"input": id}
+        query: "query getBussesByStopID($input: String!, $numberOfDepartures: Int!){stop(id: $input){name, stoptimesWithoutPatterns(numberOfDepartures: $numberOfDepartures) {scheduledArrival, headsign, trip {id, route {id, shortName}}}}}",
+        variables: {"input": id, "numberOfDepartures": numberOfDepartures}
     }
     const response = await axios.post(baseUrl, fullQuery)
     return response.data
@@ -55,7 +55,7 @@ const getAllLines = async () => {
 
 const getPatternAndTimesBasedOnLine = async (code, numberOfDepartures) => {
     const fullQuery = {
-        query: "query patterSearch ($id: String! $numberOfDepartures: Int!){pattern(id: $id) {id, name, stops {id, name, stopTimesForPattern(id: $id numberOfDepartures: $numberOfDepartures) {, scheduledArrival, realtimeArrival, arrivalDelay, scheduledDeparture, realtimeDeparture, departureDelay, realtime, realtimeState, serviceDay, headsign}}}}",
+        query: "query patterSearch ($id: String! $numberOfDepartures: Int!){pattern(id: $id) {id, name, geometry {lat, lon}, stops {id, name, lat, lon, stopTimesForPattern(id: $id numberOfDepartures: $numberOfDepartures) {scheduledArrival, realtimeArrival, arrivalDelay, scheduledDeparture, realtimeDeparture, departureDelay, realtime, realtimeState, serviceDay, headsign}}}}",
         variables: {"id": code, "numberOfDepartures": numberOfDepartures}
     }
     const response = await axios.post(baseUrl, fullQuery)
@@ -70,4 +70,13 @@ const getAlerts = async () => {
     return response.data
 }
 
-export default {getAllStops, getStopById, getStopsByName, getBussesByStopID, planRoute, getAllLines, getPatternAndTimesBasedOnLine, getAlerts}
+const getLineRoute = async (code) => {
+    const fullQuery = {
+        query: "query getLineGeometry($id: String!){pattern(id: $id) {id, name, geometry {lat, lon}}}",
+        variables: {"id": code}
+    }
+    const response = await axios.post(baseUrl, fullQuery)
+    return response.data
+}
+
+export default {getAllStops, getStopById, getStopsByName, getBussesByStopID, planRoute, getAllLines, getPatternAndTimesBasedOnLine, getAlerts, getLineRoute}

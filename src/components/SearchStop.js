@@ -5,7 +5,9 @@ class SearchStops extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            newStop: ''
+            newStop: '',
+            numberOfTimes: 5,
+            stop: ''
         }
       }
 
@@ -14,7 +16,7 @@ class SearchStops extends React.Component {
       if (filter === '') {
           return []
         }
-        const filteredStops = this.props.store.getState().allStops.filter(stop => stop.name.toLowerCase().includes(filter))
+        const filteredStops = this.props.store.getState().allStops.filter(stop => stop.name.toLowerCase().includes(filter) || stop.gtfsId.toLowerCase().includes(filter))
         if(filteredStops.length < 20) {
             return filteredStops
         }
@@ -29,26 +31,45 @@ class SearchStops extends React.Component {
         })
       }
     
-     showNextBusses = (gtfsId) => {
-      RouteService.getBussesByStopID(gtfsId).then(response =>
+     showNextBusses = (stop) => {
+      this.setState({stop: stop})
+      RouteService.getBussesByStopID(stop.gtfsId, this.state.numberOfTimes).then(response =>
         this.props.store.dispatch({
           type: 'ADD_SCHEDULE',
           schedule: response.data.stop
         }))
+        this.showStopOnMap(stop)
+     }
+
+     showStopOnMap = (stop) => {
+       this.props.store.dispatch({
+         type: 'ADD_POINT_ON_MAP',
+         data: stop
+       })
+     }
+
+     numberOfTimesChange = (event) => {
+       if(this.state.stop === '') {this.setState({ numberOfTimes: event.target.value })}
+       this.setState({
+         numberOfTimes: event.target.value
+       }, function() {
+         this.showNextBusses(this.state.stop)
+       })
      }
     
      render() {
       return (
           <div>
-            <p>Search next busses for the given stop:</p>
+            <h3>Search next public transport for the given stop</h3>
             <form>
               <input value={this.state.newStop} onChange={this.handleStopChange}></input>
+              <div> Number of timetables: <input type="number" value={this.state.numberOfTimes} onChange={this.numberOfTimesChange} min="1" max="10"></input></div>
             </form>
-            {this.searchStops() === null ? "Too many mathes." : this.searchStops().map(stop => <div key = {stop.gtfsId} onClick={() => this.showNextBusses(stop.gtfsId)}>{stop.name}, {stop.gtfsId}</div>)}
+            {this.searchStops() === null ? "Too many mathes." : this.searchStops().map(stop => <div key = {stop.gtfsId} onClick={() => this.showNextBusses(stop)}>{stop.name}, {stop.gtfsId}</div>)}
           <div></div>
           <h4>{this.props.store.getState().schedules === undefined ? '' : this.props.store.getState().schedules.name}</h4>
           <div>
-          {this.props.store.getState().schedules.info === undefined ? '' : this.props.store.getState().schedules.info.map(item => <div key={item.scheduledArrival}>{item.headsign === null ? 'The last stop' : item.headsign}, {item.scheduledArrival}, {item.busNumber}</div>)}
+          {this.props.store.getState().schedules.info === undefined ? '' : this.props.store.getState().schedules.info.map(item => <div key={item.scheduledArrival + item.busNumber}>{item.headsign === null ? 'The last stop' : item.headsign}, {item.scheduledArrival}, {item.busNumber}</div>)}
           </div>
         </div>      
       )

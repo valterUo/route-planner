@@ -2,40 +2,37 @@ import React, { Component } from 'react'
 import L from 'leaflet'
 import vectorGrid from 'leaflet.vectorgrid'
 import polyline from 'polyline'
+import GeoService from '../services/GeoService'
 
 class Map extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-        }
-    }
 
     componentDidMount() {
       this.map()
     }
 
     returnPointWithText(LatLng, text) {
-        return L.marker(LatLng).bindPopup(text)
+        const element = `<div> ${text} </div>`
+        return L.marker(LatLng).bindPopup(element)
       }
     
       returnPolyline(polylineData) {
-        try{
-        const line = polyline.decode(polylineData)
-        const pointList = []
-          for (var i=0; i < line.length; i++) {
-              var point = new L.LatLng(line[i][0], line[i][1])
-              pointList[i] = point
-            }
+        try {
+            const line = polyline.decode(polylineData)
+            const pointList = []
+                for (var i=0; i < line.length; i++) {
+                    var point = new L.LatLng(line[i][0], line[i][1])
+                    pointList[i] = point
+                }
 
-        const route = new L.Polyline(pointList, {
-          color: 'red',
-          weight: 3,
-          opacity: 0.5,
-          smoothFactor: 1.5
-        })
-        return route 
-      } catch(error) {
-        return 'Polyline decoding did not succeed.'
+            const route = new L.Polyline(pointList, {
+                color: 'red',
+                weight: 3,
+                opacity: 0.5,
+                smoothFactor: 1.5
+            })
+            return route 
+        } catch(error) {
+            return 'Polyline decoding did not succeed.'
         }
       }
 
@@ -69,7 +66,6 @@ class Map extends Component {
             .addTo(map)
 
             map.on('zoomend', function () {
-                console.log(map.getZoom())
                 if(map.getZoom() > 15) {
                   map.addLayer(stopsLayer)
                   map.addLayer(ticketSalesLayer)
@@ -80,32 +76,59 @@ class Map extends Component {
               })
           
               map.on('click', (event) => {
-                  this.props.store.dispatch({
-                      type: 'ADD_POINT_ON_MAP',
-                      data: event.latlng
-                  })
+                  GeoService.getDestination(event.latlng.lat, event.latlng.lng, 1).then(response => {
+                    this.props.store.dispatch({
+                        type: 'ADD_POINT_ON_MAP',
+                        data: {lat: event.latlng.lat, lon: event.latlng.lng, name: response.features[0].properties.name + ', ' + response.features[0].properties.neighbourhood + ', ' + response.features[0].properties.postalcode + ', ' + response.features[0].properties.localadmin + ', ' + response.features[0].properties.region}
+                    })}
+                  )
             })
 
             this.props.store.subscribe(() => {
-                if( this.props.store.getState().map.data !== undefined){
+                if( this.props.store.getState().map.type !== undefined ){
                         if( this.props.store.getState().map.type === 'route') {
                             layersOnMap.clearLayers()
                             layersOnMap = this.returnRouteLayers(this.props.store.getState().map.data.legs)
                             layersOnMap.addTo(map)
                             map.fitBounds(layersOnMap.getBounds())
                         } else if (this.props.store.getState().map.type === 'point') {
-                            const point = this.returnPointWithText([this.props.store.getState().map.data.lat, this.props.store.getState().map.data.lng], 'You are here.')
+                            const point = this.returnPointWithText([this.props.store.getState().map.data.lat, this.props.store.getState().map.data.lon], this.props.store.getState().map.data.name)
                             layersOnMap.addLayer(point)
-                            console.log(layersOnMap)
                             layersOnMap.addTo(map)
                             map.fitBounds(layersOnMap.getBounds())
-                    }
+                        } else if (this.props.store.getState().map.type === 'route_non_polyline') {
+                            layersOnMap.clearLayers()
+                            const pointList = []
+                            this.props.store.getState().map.data.forEach(element => {
+                                var point = new L.LatLng(element.lat, element.lon)
+                                pointList.push(point)
+                            })
+                            const route = new L.Polyline(pointList, {
+                                color: 'red',
+                                weight: 3,
+                                opacity: 0.5,
+                                smoothFactor: 1.5
+                            })
+                            layersOnMap.addLayer(route)
+                            const origin = L.marker(pointList[0]).bindPopup('Origin')
+                            const end = L.marker(pointList[pointList.length - 1]).bindPopup('End')
+                            layersOnMap.addLayer(origin)
+                            layersOnMap.addLayer(end)
+                            layersOnMap.addTo(map)
+                            map.fitBounds(layersOnMap.getBounds())
+                        } else if(this.props.store.getState().map.type === 'remove_layers') {
+                            layersOnMap.clearLayers()
+                            map.setZoom(14)
+                        }
+                        this.props.store.dispatch({
+                            type: 'DELETE_ALL_FROM_MAP_REDUCER'
+                         })
                 }
             })
         }
 
     render() {
-        return <div id="map" style={{height: 400}}></div>
+        return <div><h3>Map</h3><div id="map" style={{height: 400}}></div></div>
       }
 }
 

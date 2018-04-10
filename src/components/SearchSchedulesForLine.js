@@ -42,7 +42,6 @@ class SearchSchedulesForLine extends React.Component {
         this.setState({amountOfSchedules: event.target.value}, function() {
             this.getScheduleForLine()
         })
-
     }
 
     linesToShow = () => {
@@ -57,31 +56,48 @@ class SearchSchedulesForLine extends React.Component {
           return null
     }
 
-    getScheduleForLine = () => {
+    getScheduleForLine = async () => {
         this.setState({timetables: []})
-        this.state.patterns.forEach(pattern => 
-        RouteService.getPatternAndTimesBasedOnLine(pattern.code, this.state.amountOfSchedules).then(response =>
-            this.setState((prevState) => {
-               return {timetables: prevState.timetables.concat(response.data.pattern)}
+        this.state.patterns.forEach(pattern => {
+            RouteService.getPatternAndTimesBasedOnLine(pattern.code, this.state.amountOfSchedules).then(response => {
+                if(response.data.pattern.stops[0].stopTimesForPattern[0] !== undefined) {
+                    this.setState((prevState) => {
+                        return {timetables: prevState.timetables.concat(response.data.pattern)}
+                    })
+                }
             })
-        ))
+        })
+    }
+
+    drawLineToMap = (timetable) => {
+        this.props.store.dispatch({
+            type: 'ADD_ROUTE_NON_POLYLINE_DATA',
+            data: timetable.geometry
+        })
+    }
+
+    drawStopOnMap = (stop) => {
+        this.props.store.dispatch({
+            type: 'ADD_POINT_ON_MAP',
+            data: {lat: stop.lat, lon: stop.lon, name: stop.name}
+        })
     }
 
     render() {
         return(
             <div>
-                <p>Search timetables for given public transport line:</p>
+                <h3>Search timetables for each stop for the given public transport line</h3>
                 <form>
                    <input type= "text" value={this.state.line} onChange={this.lineOnChange}></input>
-                   <div> Amount of times <input type="number" value={this.state.amountOfSchedules} onChange={this.amountOfSchedulesOnChange} min="1" max="10"></input></div>
+                   <div> Number of timetables: <input type="number" value={this.state.amountOfSchedules} onChange={this.amountOfSchedulesOnChange} min="1" max="10"></input></div>
                 </form>
                 <div>
                     {this.linesToShow() === null ? "Too many mathces." : this.linesToShow().map(line => <div key={line.id} onClick={() => this.handelPatternsChange(line.patterns)}> {line.shortName}, {line.longName}</div>)}
                 </div>
                 <div>
-                    {this.state.timetables === [] ? "No timetables." : this.state.timetables.map(timetable => 
-                        <div key= {timetable.id}><h4>{timetable.name}</h4> {timetable.stops.map(stop => 
-                            <div key={stop.id}> <p></p> {stop.name}: Arriving times: {stop.stopTimesForPattern.map(time => 
+                    {this.state.timetables[0] === undefined ? "" : this.state.timetables.map(timetable => 
+                        <div key= {timetable.id}><h4 onClick = {() => this.drawLineToMap(timetable)}>{timetable.name} </h4> {timetable.stops.map(stop => 
+                            <div key={stop.id} onClick={() => this.drawStopOnMap(stop)}> <p></p> {stop.name}: Arriving times: {stop.stopTimesForPattern.map(time => 
                                 <div key = {time.scheduledArrival}>{convertTimeFromSec(time.scheduledArrival)}</div>)}</div>)}</div>)}
                 </div>
             </div>

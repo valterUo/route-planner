@@ -28,6 +28,7 @@ class SearchRoutes extends React.Component {
 
       componentDidMount() {
         this.handleInterval()
+        this.handleSearchDataChange()
     }
 
     handleInterval = () => {
@@ -109,7 +110,6 @@ class SearchRoutes extends React.Component {
         clearInterval(this.state.intervalId)          
         const timeAndDate = this.props.store.getState().routes[0].legs[0].startTime - 400000
         const d = new Date(timeAndDate)
-        console.log(getTimefromDate(d))
         this.setState({time: getTimefromDate(d), date: getDayFromDate(d)}, function () {
             this.searchRoutes()
         })
@@ -142,12 +142,31 @@ class SearchRoutes extends React.Component {
             this.props.store.dispatch({
                 type: 'ADD_ROUTES',
                 routes: response.data.plan.itineraries
-            })//.then(() => {console.log( this.props.store.getState().routes[0]) })
+            })
         )
-            /*this.props.store.dispatch({
-            type:'ADD_ROUTE_ON_MAP',
-            data: this.props.store.getState().routes[0]
-        }) console.log(this.props.store.getState().routes[0]))*/
+      }
+
+      handleSearchDataChange = () => {
+        const store = this.props.store
+        store.subscribe(() => {
+            if(store.getState().searchData.readyToSearch === true) {
+                this.setState({
+                    newStop: store.getState().searchData.fromPlace,
+                    newStop2: store.getState().searchData.toPlace,
+                    fromPlace: store.getState().searchData.fromPlace, 
+                    fromLat: store.getState().searchData.fromLat, 
+                    fromLon: store.getState().searchData.fromLon, 
+                    toPlace: store.getState().searchData.toPlace, 
+                    toLat: store.getState().searchData.toLat, 
+                    toLon: store.getState().searchData.toLon
+          }, function() {
+              store.dispatch({
+                  type: 'READY_TO_SEARCH'
+              })
+              this.searchRoutes()
+          })
+        }
+        })
       }
 
       render(){

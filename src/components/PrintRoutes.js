@@ -3,10 +3,6 @@ import {getTimefromDateWithoutSec, convertTimeFromSec} from '../converters/timeC
 
 class PrintRoutes extends React.Component {
 
-    componentDidMount() {
-        
-    }
-
     addRouteToMap(route) {
         this.props.store.dispatch({
             type:'ADD_ROUTE_ON_MAP',
@@ -51,7 +47,7 @@ class PrintRoutes extends React.Component {
     render() {
         return(
             <div>
-                {this.props.store.getState().routes.length === 0 ? "Search for routes." : this.printRoutes()}
+                {this.props.store.getState().routes.length === 0 ? "" : this.printRoutes()}
             </div>
         )
     }
