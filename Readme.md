@@ -1,5 +1,9 @@
 # Route Planner
 
+##Backend repository:
+
+[Route Planner Backend](https://github.com/valterUo/route-planner_backend)
+
 ## Backround of the idea: 
 
 The Route Planner is an optional version of [HSL Reittiopas](https://www.reittiopas.fi/). Reittiopas is built with React and it uses [Digitransit](https://digitransit.fi/en/developers/apis/) open source database to calculate itinaries. The database is built with [GraphQL](http://graphql.org/) which is a query language developed by Facebook. It automatically calculates itinaries between wanted destinations. Maps are created using [Leaflet](http://leafletjs.com/) Javascript library. My aim is, more or less, to use Digitransit to build a new "Reittiopas" so that it serves features that I have seen useful in my every day life. HSL Reittiopas is not practical when you want to make fast searches and espesically using your mobilephone. Also, Reittiops (and HSL page which is strongly connected to Reittiopas) is not very intutive once you have logged in there. My backend is mainly for logging purposes. Let see how I success.
@@ -38,13 +42,9 @@ The Route Planner is a lighter version of Reittiopas. It is meant to be used by 
 
 ## Product version
 
-You can find the very first version here: https://route-planner-ztnqdladow.now.sh/. It is build using [Zeit](https://zeit.co/).
+The version without backend version: https://route-planner2018.herokuapp.com/
 
-The second version is here https://route-planner-hqptmifcrr.now.sh.
-
-The third version: https://route-planner-itajhfkqaq.now.sh/.
-
-The latest version: https://route-planner2018.herokuapp.com/
+The latest version: https://route-planner-2018.herokuapp.com/
 
 ## Working hours
 
