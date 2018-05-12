@@ -1,6 +1,8 @@
 import React from 'react'
 import LoginService from '../services/LoginService'
 import LocationService from '../services/LocationService'
+import { addPointToMap, deleteAllFromMap } from '../actions/actionCreators'
+import { connect } from 'react-redux'
 
 class LoginForm extends React.Component {
 	constructor(props) {
@@ -27,15 +29,17 @@ class LoginForm extends React.Component {
     handleSubmit = async (event) => {
     	event.preventDefault()
     	try{
-    		const result = await LoginService.login(this.state.username, this.state.password)
+    		const user = await LoginService.login(this.state.username, this.state.password)
     		this.setState({
     			username: '',
     			password: '',
     			toggleLoginForm: false,
-    			name: result.name
+    			name: user.name
     		})
-    		window.localStorage.setItem('loggedUser', JSON.stringify(result))
-    		LocationService.setToken(result.token)
+    		window.localStorage.setItem('loggedUser', JSON.stringify(user))
+    		LocationService.setToken(user.token)
+    		const location = await LocationService.getLocation(user.locations)
+    		this.props.addPointToMap(location.homeLocation)
     	} catch (error) {
     		console.log(error)
     	}
@@ -48,6 +52,7 @@ class LoginForm extends React.Component {
     logout = (event) => {
     	event.preventDefault()
     	window.localStorage.clear()
+    	this.props.deleteAllFromMap()
     	this.setState({
     		toggleLoginForm: true
     	})
@@ -81,4 +86,15 @@ class LoginForm extends React.Component {
     }
 }
 
-export default LoginForm
+const mapStateToProps = () => {
+	return{}
+}
+
+const mapDispatchToProps = {
+	addPointToMap,
+	deleteAllFromMap
+}
+
+const ConnectedLoginForm = connect(mapStateToProps, mapDispatchToProps)(LoginForm)
+
+export default ConnectedLoginForm

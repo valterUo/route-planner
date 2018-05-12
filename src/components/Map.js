@@ -3,6 +3,7 @@ import L from 'leaflet'
 import vectorGrid from 'leaflet.vectorgrid' // eslint-disable-line
 import polyline from 'polyline'
 import GeoService from '../services/GeoService'
+import { addPointToMap, deleteAllFromMap } from '../actions/actionCreators'
 
 class Map extends Component {
 
@@ -61,7 +62,7 @@ class Map extends Component {
 
 		L.tileLayer('https://cdn.digitransit.fi/map/v1/{id}/{z}/{x}/{y}.png', {
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-              '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ',
+              '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ',
 			id: 'hsl-map' })
 			.addTo(map)
 
@@ -77,29 +78,30 @@ class Map extends Component {
 
 		map.on('click', (event) => {
 			GeoService.getDestination(event.latlng.lat, event.latlng.lng, 1).then(response => {
-				this.props.store.dispatch({
-					type: 'ADD_POINT_ON_MAP',
-					data: { lat: event.latlng.lat, lon: event.latlng.lng, name: response.features[0].properties.name + ', ' + response.features[0].properties.neighbourhood + ', ' + response.features[0].properties.postalcode + ', ' + response.features[0].properties.localadmin + ', ' + response.features[0].properties.region }
-				})}
+				this.props.store.dispatch(addPointToMap({ lat: event.latlng.lat,
+					lon: event.latlng.lng,
+					name: response.features[0].properties.name + ', ' + response.features[0].properties.neighbourhood + ', ' + response.features[0].properties.postalcode + ', ' + response.features[0].properties.localadmin + ', ' + response.features[0].properties.region }
+				))}
 			)
 		})
 
 		this.props.store.subscribe(() => {
-			if( this.props.store.getState().map.type !== undefined ){
-				if( this.props.store.getState().map.type === 'route') {
+			const mapReducer = this.props.store.getState().map
+			if( mapReducer.type !== undefined ){
+				if( mapReducer.type === 'route') {
 					layersOnMap.clearLayers()
-					layersOnMap = this.returnRouteLayers(this.props.store.getState().map.data.legs)
+					layersOnMap = this.returnRouteLayers(mapReducer.data.legs)
 					layersOnMap.addTo(map)
 					map.fitBounds(layersOnMap.getBounds())
-				} else if (this.props.store.getState().map.type === 'point') {
-					const point = this.returnPointWithText([this.props.store.getState().map.data.lat, this.props.store.getState().map.data.lon], this.props.store.getState().map.data.name)
+				} else if (mapReducer.type === 'point') {
+					const point = this.returnPointWithText([mapReducer.data.lat, mapReducer.data.lon], mapReducer.data.name)
 					layersOnMap.addLayer(point)
 					layersOnMap.addTo(map)
 					map.fitBounds(layersOnMap.getBounds())
-				} else if (this.props.store.getState().map.type === 'route_non_polyline') {
+				} else if (mapReducer.type === 'route_non_polyline') {
 					layersOnMap.clearLayers()
 					const pointList = []
-					this.props.store.getState().map.data.forEach(element => {
+					mapReducer.data.forEach(element => {
 						var point = new L.LatLng(element.lat, element.lon)
 						pointList.push(point)
 					})
@@ -116,13 +118,11 @@ class Map extends Component {
 					layersOnMap.addLayer(end)
 					layersOnMap.addTo(map)
 					map.fitBounds(layersOnMap.getBounds())
-				} else if(this.props.store.getState().map.type === 'remove_layers') {
+				} else if(mapReducer.type === 'remove_layers') {
 					layersOnMap.clearLayers()
 					map.setZoom(14)
 				}
-				this.props.store.dispatch({
-					type: 'DELETE_ALL_FROM_MAP_REDUCER'
-				})
+				this.props.store.dispatch(deleteAllFromMap())
 			}
 		})
 	}

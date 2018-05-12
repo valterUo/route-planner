@@ -1,6 +1,5 @@
 import React from 'react'
 import RouteService from './services/RouteService'
-import LocationService from './services/LocationService'
 import SearchStops from './components/SearchStop'
 import SearchRoutes from './components/SearchRoutes'
 import PrintRoutes from './components/PrintRoutes'
@@ -41,19 +40,19 @@ class App extends React.Component {
 				<p></p>
 				<CreateNewUser/>
 				<p></p>
-				<SearchSchedulesForLine store = {this.props.store} />
+				<SearchSchedulesForLine />
 				<p></p>
-				<SearchStops store = {this.props.store} />
+				<SearchStops />
 				<p></p>
 				<SearchRoutes store = {this.props.store} />
 				<p></p>
-				<PrintRoutes store = {this.props.store} />
+				<PrintRoutes />
 				<p></p>
 				<Map store = {this.props.store} />
 				<p></p>
 				<Markers store = {this.props.store}/>
 				<p></p>
-				<Alerts store = {this.props.store}/>
+				<Alerts />
 			</div>
 		)
 	}

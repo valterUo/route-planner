@@ -34,7 +34,7 @@ User loggs in
 
 ## Advantages compared to HSL Reittiopas:
 
-The Route Planner is a lighter version of Reittiopas. It is meant to be used by people who do not need map and who want simple layout. My own experience is that I often make similar searches so the Route Planner offers those searhes immeaditely on the front page. Reittiopas does not provide data for routes that goes beyond the HSL-area altough Digitransit service provides data for calculating futher routes also. I can try to add that data for my service.
+The Route Planner is a lighter version of Reittiopas. It is meant to be used by people who do not need map and who want simple layout. My own experience is that I often make similar searches so the Route Planner offers those searhes immeaditely on the front page. Reittiopas does not provide data for routes that goes beyond the HSL-area altough Digitransit service provides data for calculating futher routes also. I can try to add that data to my service.
 
 ## Future possibilities:
 
@@ -42,7 +42,7 @@ The Route Planner is a lighter version of Reittiopas. It is meant to be used by 
 
 ## Product version
 
-The version without backend version: https://route-planner2018.herokuapp.com/
+The version without backend: https://route-planner2018.herokuapp.com/
 
 The latest version: https://route-planner-2018.herokuapp.com/
 

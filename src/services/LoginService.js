@@ -3,11 +3,11 @@ const baseUrl = '/login'
 
 const login = async (username, password) => {
 	try {
-		const response = await axios.post(baseUrl, {
+		const user = await axios.post(baseUrl, {
 			username: username,
 			password: password
 		})
-		return response.data
+		return user.data
 	} catch(error) {
 		console.log(error)
 	}

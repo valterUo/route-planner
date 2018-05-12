@@ -1,6 +1,8 @@
 import React from 'react'
 import RouteService from '../services/RouteService'
+import { connect } from 'react-redux'
 import { getToday, getTimefromDate, getDayFromDate } from '../converters/timeConverter'
+import { newFilterFrom, newFilterTo, addRoutes, readyToSearch } from '../actions/actionCreators'
 
 class SearchRoutes extends React.Component {
 	constructor(props) {
@@ -37,27 +39,21 @@ class SearchRoutes extends React.Component {
     }
 
       handleStopChange = (event) => {
-      	this.props.store.dispatch({
-      		type: 'NEW_FILTER_FROM',
-      		filter: event.target.value
-      	})
+      	this.props.newFilterFrom(event.target.value)
       	this.setState({ newStop: event.target.value })
       }
 
       handleStopChange2 = (event) => {
-      	this.props.store.dispatch({
-      		type: 'NEW_FILTER_TO',
-      		filter: event.target.value
-      	})
+      	this.props.newFilterTo(event.target.value)
       	this.setState({ newStop2: event.target.value })
       }
 
       FromStopsToShow = () => {
-      	const filter = this.props.store.getState().filter.from.toLowerCase()
+      	const filter = this.props.filter.from.toLowerCase()
       	if (filter === '') {
       		return []
       	}
-      	const filteredStops = this.props.store.getState().allStops.filter(stop => stop.name.toLowerCase().includes(filter))
+      	const filteredStops = this.props.allStops.filter(stop => stop.name.toLowerCase().includes(filter))
       	if(filteredStops.length < 20) {
       		return filteredStops
       	}
@@ -65,11 +61,11 @@ class SearchRoutes extends React.Component {
       }
 
       ToStopsToShow = () => {
-      	const filter = this.props.store.getState().filter.to.toLowerCase()
+      	const filter = this.props.filter.to.toLowerCase()
       	if (filter === '') {
       		return []
       	}
-      	const filteredStops = this.props.store.getState().allStops.filter(stop => stop.name.toLowerCase().includes(filter))
+      	const filteredStops = this.props.allStops.filter(stop => stop.name.toLowerCase().includes(filter))
       	if(filteredStops.length < 20) {
       		return filteredStops
       	}
@@ -81,10 +77,7 @@ class SearchRoutes extends React.Component {
       		fromLat: lat,
       		fromLon: lon,
       		newStop: name + ' ' + id })
-      	this.props.store.dispatch({
-      		type: 'NEW_FILTER_FROM',
-      		filter: ''
-      	})
+      	this.props.newFilterFrom('')
       }
 
       handleOnclickChangeTo = (name, lat, lon, id) => {
@@ -92,10 +85,7 @@ class SearchRoutes extends React.Component {
       		toLat: lat,
       		toLon: lon,
       		newStop2: name + ' ' + id })
-      	this.props.store.dispatch({
-      		type: 'NEW_FILTER_TO',
-      		filter: ''
-      	})
+      	this.props.newFilterTo('')
       }
 
       handleEventChanges = (event) => {
@@ -108,7 +98,7 @@ class SearchRoutes extends React.Component {
 
       searchPrevious = () => {
       	clearInterval(this.state.intervalId)
-      	const timeAndDate = this.props.store.getState().routes[0].legs[0].startTime - 400000
+      	const timeAndDate = this.props.routes[0].legs[0].startTime - 400000
       	const d = new Date(timeAndDate)
       	this.setState({ time: getTimefromDate(d), date: getDayFromDate(d) }, function () {
       		this.searchRoutes()
@@ -117,7 +107,7 @@ class SearchRoutes extends React.Component {
 
       searchNext = () => {
       	clearInterval(this.state.intervalId)
-      	const routes = this.props.store.getState().routes
+      	const routes = this.props.routes
       	const legs = routes[routes.length - 1].legs
       	const timeAndDate = legs[legs.length - 1].startTime + 300000
       	const d = new Date(timeAndDate)
@@ -139,30 +129,25 @@ class SearchRoutes extends React.Component {
       	if(this.state.tram === true) {modes = modes +  'TRAM,'}
       	const { fromPlace, fromLat, fromLon, toPlace, toLat, toLon, date, time, numItineraries } = this.state
       	RouteService.planRoute(fromPlace, fromLat, fromLon, toPlace, toLat, toLon, modes, date, time, numItineraries).then(response =>
-      		this.props.store.dispatch({
-      			type: 'ADD_ROUTES',
-      			routes: response.data.plan.itineraries
-      		})
+      		this.props.addRoutes(response.data.plan.itineraries)
       	)
       }
 
       handleSearchDataChange = () => {
-      	const store = this.props.store
-      	store.subscribe(() => {
-      		if(store.getState().searchData.readyToSearch === true) {
+      	this.props.store.subscribe(() => {
+      		const searchData = this.props.store.getState().searchData
+      		if(searchData.readyToSearch === true) {
       			this.setState({
-      				newStop: store.getState().searchData.fromPlace,
-      				newStop2: store.getState().searchData.toPlace,
-      				fromPlace: store.getState().searchData.fromPlace,
-      				fromLat: store.getState().searchData.fromLat,
-      				fromLon: store.getState().searchData.fromLon,
-      				toPlace: store.getState().searchData.toPlace,
-      				toLat: store.getState().searchData.toLat,
-      				toLon: store.getState().searchData.toLon
+      				newStop: searchData.fromPlace,
+      				newStop2: searchData.toPlace,
+      				fromPlace: searchData.fromPlace,
+      				fromLat: searchData.fromLat,
+      				fromLon: searchData.fromLon,
+      				toPlace: searchData.toPlace,
+      				toLat: searchData.toLat,
+      				toLon: searchData.toLon
       			}, function() {
-      				store.dispatch({
-      					type: 'READY_TO_SEARCH'
-      				})
+      				this.props.readyToSearch()
       				this.searchRoutes()
       			})
       		}
@@ -213,7 +198,7 @@ class SearchRoutes extends React.Component {
       					<input type="submit" value="Search"/>
       				</form>
       			</div>
-      			<p style ={{ visibility: this.props.store.getState().routes[0] === undefined ? 'hidden' : 'visible' }}>
+      			<p style ={{ visibility: this.props.routes[0] === undefined ? 'hidden' : 'visible' }}>
       				<input type="button" value="Previous" onClick={this.searchPrevious}/>
       				<input type="button" value="Next" onClick={this.searchNext}/>
       			</p>
@@ -222,4 +207,22 @@ class SearchRoutes extends React.Component {
       }
 }
 
-export default SearchRoutes
+const mapStateToProps = (state) => {
+	return {
+		searchData: state.searchData,
+		routes: state.routes,
+		allStops: state.allStops,
+		filter: state.filter
+	}
+}
+
+const mapDispatchToProps = {
+	newFilterFrom,
+	newFilterTo,
+	addRoutes,
+	readyToSearch
+}
+
+const ConnectedSearchRoutes = connect(mapStateToProps, mapDispatchToProps)(SearchRoutes)
+
+export default ConnectedSearchRoutes

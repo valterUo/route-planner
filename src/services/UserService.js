@@ -11,7 +11,9 @@ const createUser = async (newUser) => {
 }
 
 const getUser = async (userId) => {
-
+	const user = await axios.get(baseUrl + '/' + userId)
+	console.log(user)
+	return user
 }
 
 export default { createUser, getUser }

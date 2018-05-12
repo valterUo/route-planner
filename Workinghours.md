@@ -10,4 +10,5 @@
 | 30.3. |  10 | Making the map better and adding properties there, fixing a bug in the clock and making little changes |
 | 10.4. | 12  | Adding interaction between the searches and the map, fixing bugs in searches (if some bus line is not operating, now the program does not show empty timetable skeleton), trying to add a button to the leaflet markers but it is not easy|
 | 16.4. | 12  | User account control in backend, ESlint, crypted passwords and token authentication, login and sing up features, MongoDB for user data |
-| Total: | 78  | credits: ~ 4.45 |
+| 12.5. | 8 | More features to users (home locations, favourite locations, favourite lines, favourite stops), refactoring (connect) |
+| Total: | 86  | credits: ~ 4.9 |
