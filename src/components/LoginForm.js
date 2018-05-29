@@ -1,8 +1,9 @@
 import React from 'react'
 import LoginService from '../services/LoginService'
 import LocationService from '../services/LocationService'
-import { addPointToMap, deleteAllFromMap } from '../actions/actionCreators'
+import { addPointToMap, removeAllLayers, addUser, deleteUser, notify } from '../actions/actionCreators'
 import { connect } from 'react-redux'
+import { Button } from 'react-bootstrap'  // eslint-disable-line
 
 class LoginForm extends React.Component {
 	constructor(props) {
@@ -18,6 +19,7 @@ class LoginForm extends React.Component {
 		const loggedUserJSON = window.localStorage.getItem('loggedUser')
 		if (loggedUserJSON) {
 			const user = JSON.parse(loggedUserJSON)
+			this.props.addUser(user)
 			this.setState({
 				name: user.name
 			})
@@ -38,10 +40,12 @@ class LoginForm extends React.Component {
     		})
     		window.localStorage.setItem('loggedUser', JSON.stringify(user))
     		LocationService.setToken(user.token)
-    		const location = await LocationService.getLocation(user.locations)
-    		this.props.addPointToMap(location.homeLocation)
+    		if(user.locations.homeLocation !== null){ this.props.addPointToMap(user.locations.homeLocation) }
+    		this.props.addUser(user)
+    		this.props.notify(user.username + ' logged in!', 'success')
     	} catch (error) {
     		console.log(error)
+    		this.props.notify('Invalid username or password', 'danger')
     	}
     }
 
@@ -52,10 +56,13 @@ class LoginForm extends React.Component {
     logout = (event) => {
     	event.preventDefault()
     	window.localStorage.clear()
-    	this.props.deleteAllFromMap()
+    	this.props.removeAllLayers()
+    	this.props.deleteUser()
     	this.setState({
-    		toggleLoginForm: true
+    		toggleLoginForm: true,
+    		name: ''
     	})
+    	this.props.notify('You logged out!', 'info')
     }
 
     render() {
@@ -63,7 +70,7 @@ class LoginForm extends React.Component {
     		return(
     			<div>
     				<div>Logged in user: {this.state.name}</div>
-    				<button onClick = {this.logout}>Log out</button>
+    				<Button onClick = {this.logout}>Log out</Button>
     			</div>
     		)
     	}
@@ -79,7 +86,7 @@ class LoginForm extends React.Component {
             Password
     					<input type= "password" value = {this.state.password} onChange = {this.handlePasswordChange}/>
     				</div>
-    				<button type="submit">Log in</button>
+    				<Button type="submit">Log in</Button>
     			</form>
     		</div>
     	)
@@ -92,7 +99,10 @@ const mapStateToProps = () => {
 
 const mapDispatchToProps = {
 	addPointToMap,
-	deleteAllFromMap
+	removeAllLayers,
+	addUser,
+	deleteUser,
+	notify
 }
 
 const ConnectedLoginForm = connect(mapStateToProps, mapDispatchToProps)(LoginForm)

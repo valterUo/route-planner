@@ -1,8 +1,9 @@
 import React from 'react'
 import RouteService from '../services/RouteService'
 import LocationService from '../services/LocationService'
-import { newFilterStop, addSchedule, addPointToMap } from '../actions/actionCreators'
+import { newFilterStop, addSchedule, addPointToMap, notify } from '../actions/actionCreators'
 import { connect } from 'react-redux'
+import { Button } from 'react-bootstrap'  // eslint-disable-line
 
 class SearchStops extends React.Component {
 	constructor(props) {
@@ -32,13 +33,14 @@ class SearchStops extends React.Component {
      }
 
      showNextBusses = (stop) => {
-     	this.setState({ stop: stop })
+		 this.setState({ stop: stop })
+		 try {
      	RouteService.getBussesByStopID(stop.gtfsId, this.state.numberOfTimes).then(response =>
-     		this.props.addSchedule(response.data.stop))
-     	this.showStopOnMap(stop)
-     }
-
-     showStopOnMap = (stop) => {
+			 this.props.addSchedule(response.data.stop))
+		 } catch (error) {
+     		console.log(error)
+     		this.props.notify('Failed getting busses by stop id.', 'danger')
+		 }
      	this.props.addPointToMap(stop)
      }
 
@@ -52,7 +54,13 @@ class SearchStops extends React.Component {
      }
 
      addStoptoFavourites = (stop) => {
-     	LocationService.addStoptoFavourites(stop)
+		 try {
+		 	LocationService.addStoptoFavourites(stop)
+		 	this.props.notify('The stop is added to your favourites.', 'info')
+		 } catch (error) {
+     		console.log(error)
+     		this.props.notify('Failed adding the stop to your favourites.', 'danger')
+		 }
      }
 
      render() {
@@ -65,7 +73,7 @@ class SearchStops extends React.Component {
      				<div> Number of timetables: <input type="number" value={this.state.numberOfTimes} onChange={this.numberOfTimesChange} min="1" max="10"></input></div>
      			</form>
      			{this.searchStops() === null ? 'Too many mathes.' : this.searchStops().map(stop =>
-				 <div key = {stop.gtfsId} onClick={() => this.showNextBusses(stop)}>{stop.name}, {stop.gtfsId} <button onClick = {() => this.addStoptoFavourites(stop)}>Add to favourite stops</button></div>)}
+				 <div><div key = {stop.gtfsId} onClick={() => this.showNextBusses(stop)}>{stop.name}, {stop.gtfsId}</div><Button onClick = {() => this.addStoptoFavourites(stop)}>Add to favourite stops</Button></div>)}
      			<div></div>
      			<h4>{schedules === undefined ? '' : schedules.name}</h4>
      			<div>
@@ -86,7 +94,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
 	newFilterStop,
 	addSchedule,
-	addPointToMap
+	addPointToMap,
+	notify
 }
 
 const ConnectedSearchStops = connect(mapStateToProps, mapDispatchToProps)(SearchStops)

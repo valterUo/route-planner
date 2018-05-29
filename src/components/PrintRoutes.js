@@ -2,6 +2,7 @@ import React from 'react'
 import { getTimefromDateWithoutSec, convertTimeFromSec } from '../converters/timeConverter'
 import { connect } from 'react-redux'
 import { addRouteOnMap } from '../actions/actionCreators'
+import { Table } from 'react-bootstrap' // eslint-disable-line
 
 class PrintRoutes extends React.Component {
 
@@ -10,9 +11,8 @@ class PrintRoutes extends React.Component {
 			<div>
 				{this.props.routes.map(route =>
 					<div key = {route.id} onClick={() => this.props.addRouteOnMap(route)}>
-						<div>----------------------------------</div>
 						<p>Walking distance: {route.walkDistance.toFixed(1)}. Total traveling time: {convertTimeFromSec(route.duration)}</p>
-						<table>
+						<Table>
 							<tbody>
 								<tr>
 									<th>Starting point</th>
@@ -32,8 +32,7 @@ class PrintRoutes extends React.Component {
 										<th>{convertTimeFromSec(Math.floor((leg.endTime - leg.startTime)/1000))}</th>
 									</tr>)}
 							</tbody>
-						</table>
-						<div>----------------------------------</div>
+						</Table>
 					</div>)}
 			</div>
 		)

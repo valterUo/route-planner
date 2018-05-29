@@ -1,20 +1,20 @@
 # Route Planner
 
+## Remarks:
+
+All the features that I described below, did not complete fully. This is mostly because of time limits, not because of technical difficulties.
+
 ## Backend repository:
 
 [Route Planner Backend](https://github.com/valterUo/route-planner_backend)
 
 ## Backround of the idea: 
 
-The Route Planner is an optional version of [HSL Reittiopas](https://www.reittiopas.fi/). Reittiopas is built with React and it uses [Digitransit](https://digitransit.fi/en/developers/apis/) open source database to calculate itinaries. The database is built with [GraphQL](http://graphql.org/) which is a query language developed by Facebook. It automatically calculates itinaries between wanted destinations. Maps are created using [Leaflet](http://leafletjs.com/) Javascript library. My aim is, more or less, to use Digitransit to build a new "Reittiopas" so that it serves features that I have seen useful in my every day life. HSL Reittiopas is not practical when you want to make fast searches and espesically using your mobilephone. Also, Reittiops (and HSL page which is strongly connected to Reittiopas) is not very intutive once you have logged in there. My backend is mainly for logging purposes. Let see how I success.
+The Route Planner is an optional version of [HSL Reittiopas](https://www.reittiopas.fi/). Reittiopas is built with React and it uses [Digitransit](https://digitransit.fi/en/developers/apis/) open source database to calculate itinaries. The database is built with [GraphQL](http://graphql.org/) which is a query language developed by Facebook. It automatically calculates itinaries between given destinations. Maps are created using [Leaflet](http://leafletjs.com/) Javascript library. My aim is, more or less, to use Digitransit to build a new "Reittiopas" so that it serves features that I have seen useful in my every day life. HSL Reittiopas is not practical when you want to make fast searches and espesically using your mobilephone. Also, Reittiopas (and HSL page which is strongly connected to Reittiopas) is not very intutive once you have logged in there. My backend is mainly for handling user's personal data.
 
 ## Main features: 
 
-Searches: An itinery from destination A to destination B, next busses that pass the defined bus stop, a schedule of the defined bus line, (possible: next busses that pass many defined stops in some defined area), adding favourite bus stops
-
-## Additional features: 
-
-Alerts and maps
+Searches: An itinery from destination A to destination B, next public transport that pass the defined bus stop, a schedule of the defined transport line, (possible: next busses that pass many defined stops in some defined area), adding favourite transport stops, lines and locations (homelocation), real time alerts, map that shows locations and routes and works interactive way with searches
 
 ## Maps:
 
@@ -22,7 +22,7 @@ Original Reittiopas uses Leaflet maps and the points of interest are added onto 
 
 ## Example of user experience: 
 
-User loggs in
+User logs in
  
 -> the user sees next busses that pass his "Favourite bus stops" (and maybe also busses)
 

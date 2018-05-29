@@ -4,6 +4,7 @@ import { convertTimeFromSec } from '../converters/timeConverter'
 import LocationService from '../services/LocationService'
 import { connect } from 'react-redux'
 import { addPointToMap, addRouteNonPolyline, addAllLines, newFilterLine } from '../actions/actionCreators'
+import { Button } from 'react-bootstrap'  // eslint-disable-line
 
 class SearchSchedulesForLine extends React.Component {
 	constructor(props) {
@@ -87,7 +88,7 @@ class SearchSchedulesForLine extends React.Component {
     				<div> Number of timetables: <input type="number" value={this.state.amountOfSchedules} onChange={this.amountOfSchedulesOnChange} min="2" max="10"></input></div>
     			</form>
     			<div>
-    				{this.linesToShow() === null ? 'Too many mathces.' : this.linesToShow().map(line => <div key={line.id}><div onClick={() => this.handelPatternsChange(line.patterns)}> {line.shortName}, {line.longName}</div><button onClick = {() => this.addLinetoFavourites(line)}>Add the line to favourites</button></div>)}
+    				{this.linesToShow() === null ? 'Too many mathces.' : this.linesToShow().map(line => <div key={line.id}><div onClick={() => this.handelPatternsChange(line.patterns)}> {line.shortName}, {line.longName}</div><Button onClick = {() => this.addLinetoFavourites(line)}>Add the line to favourites</Button></div>)}
     			</div>
     			<div>
     				{this.state.timetables[0] === undefined ? '' : this.state.timetables.map(timetable =>

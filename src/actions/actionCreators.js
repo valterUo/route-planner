@@ -16,7 +16,6 @@ const addSearchDataTo = (element) => {
 		type: 'ADD_SEARCH_DATA_TO',
 		data: { toLat: element.lat, toLon: element.lon, toPlace: element.name }
 	}
-
 }
 
 const addSearchDataFrom = (element) => {
@@ -101,6 +100,45 @@ const addSchedule = (schedule) => {
 	}
 }
 
+const addUser = (user) => {
+	return {
+		type: 'ADD_USER',
+		user: user
+	}
+}
+
+const deleteUser = () => {
+	return {
+		type: 'DELETE_USER'
+	}
+}
+
+const showNotification = (notification, quont) => {
+	return {
+		type: 'NEW_NOTIFICATION',
+		notification: notification,
+		class: quont
+	}
+}
+const hideNotification = () => {
+	return {
+		type: 'DELETE_NOTIFICATION'
+	}
+}
+
+let nextNotificationId = 0
+const notify = (notification, quont) => {
+	return function (dispatch) {
+		dispatch(showNotification(notification, quont))
+		console.log(nextNotificationId)
+		clearTimeout(nextNotificationId)
+		nextNotificationId = setTimeout(() => {
+			dispatch(hideNotification())
+		}, 5000)
+	}
+
+}
+
 export { addPointToMap,
 	deleteAllFromMap,
 	addSearchDataFrom,
@@ -115,4 +153,7 @@ export { addPointToMap,
 	addAllLines,
 	newFilterLine,
 	newFilterStop,
-	addSchedule }
+	addSchedule,
+	addUser,
+	deleteUser,
+	notify }

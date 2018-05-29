@@ -11,4 +11,5 @@
 | 10.4. | 12  | Adding interaction between the searches and the map, fixing bugs in searches (if some bus line is not operating, now the program does not show empty timetable skeleton), trying to add a button to the leaflet markers but it is not easy|
 | 16.4. | 12  | User account control in backend, ESlint, crypted passwords and token authentication, login and sing up features, MongoDB for user data |
 | 12.5. | 8 | More features to users (home locations, favourite locations, favourite lines, favourite stops), refactoring (connect) |
-| Total: | 86  | credits: ~ 4.9 |
+| 29.5. | 10 | React router (router broke the map), Boostrap, Notifications (at last), fixing some bugs |
+| Total: | 92  | credits: ~ 5.2 |

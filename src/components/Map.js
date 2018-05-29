@@ -51,7 +51,7 @@ class Map extends Component {
 	}
 
 	map() {
-		const map = L.map('map').setView([60.205499178, 24.958662832], 14) //Kumpula
+		const map = L.map('map').setView([60.205499178, 24.958662832], 13) //Kumpula
 		const stopsUrl = 'https://cdn.digitransit.fi/map/v1/hsl-stop-map/{z}/{x}/{y}.pbf'
 		const ticketSalesUrl = 'https://cdn.digitransit.fi/map/v1/hsl-ticket-sales-map/{z}/{x}/{y}.pbf'
 		const stopStyles = { stops: { fill: true, fillColor: 'orange', weight: 1, color: 'purple', opacity: 0.85 } }
@@ -120,7 +120,7 @@ class Map extends Component {
 					map.fitBounds(layersOnMap.getBounds())
 				} else if(mapReducer.type === 'remove_layers') {
 					layersOnMap.clearLayers()
-					map.setZoom(14)
+					map.setView([60.205499178, 24.958662832], 13) //Kumpula
 				}
 				this.props.store.dispatch(deleteAllFromMap())
 			}

@@ -1,5 +1,6 @@
 import React from 'react'
 import UserService from '../services/UserService'
+import { Button } from 'react-bootstrap'  // eslint-disable-line
 
 class CreateNewUser extends React.Component {
 	constructor(props) {
@@ -48,9 +49,9 @@ class CreateNewUser extends React.Component {
     				</div>
     				<div>
                     Password
-    					<input name = "password" type="text" value = {this.state.password} onChange = {this.handleEventChanges}/>
+    					<input name = "password" type="password" value = {this.state.password} onChange = {this.handleEventChanges}/>
     				</div>
-    				<button type="submit">Sign up</button>
+    				<Button type="submit">Sign up</Button>
     			</form>
     		</div>
     	)
