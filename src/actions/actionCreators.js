@@ -130,7 +130,6 @@ let nextNotificationId = 0
 const notify = (notification, quont) => {
 	return function (dispatch) {
 		dispatch(showNotification(notification, quont))
-		console.log(nextNotificationId)
 		clearTimeout(nextNotificationId)
 		nextNotificationId = setTimeout(() => {
 			dispatch(hideNotification())

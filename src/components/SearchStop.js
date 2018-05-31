@@ -1,9 +1,9 @@
 import React from 'react'
 import RouteService from '../services/RouteService'
 import LocationService from '../services/LocationService'
-import { newFilterStop, addSchedule, addPointToMap, notify } from '../actions/actionCreators'
+import { newFilterStop, addSchedule, addPointToMap, notify, addUser } from '../actions/actionCreators'
 import { connect } from 'react-redux'
-import { Button } from 'react-bootstrap'  // eslint-disable-line
+import { Button, FormGroup, FormControl } from 'react-bootstrap'  // eslint-disable-line
 
 class SearchStops extends React.Component {
 	constructor(props) {
@@ -55,7 +55,10 @@ class SearchStops extends React.Component {
 
      addStoptoFavourites = (stop) => {
 		 try {
-		 	LocationService.addStoptoFavourites(stop)
+			 LocationService.addStoptoFavourites(stop)
+			 const newUser = this.props.user
+    		newUser.locations.favouriteStops = newUser.locations.favouriteStops.concat(stop)
+    		this.props.addUser(newUser)
 		 	this.props.notify('The stop is added to your favourites.', 'info')
 		 } catch (error) {
      		console.log(error)
@@ -69,9 +72,13 @@ class SearchStops extends React.Component {
      		<div>
      			<h3>Search next public transport for the given stop</h3>
      			<form>
-     				<input value={this.state.newStop} onChange={this.handleStopChange}></input>
-     				<div> Number of timetables: <input type="number" value={this.state.numberOfTimes} onChange={this.numberOfTimesChange} min="1" max="10"></input></div>
-     			</form>
+					 <FormGroup>
+     				<FormControl style={{ width: 200 }} value={this.state.newStop} onChange={this.handleStopChange}/>
+     				<div>
+						 Number of timetables: <FormControl style={{ width: 80 }} type="number" value={this.state.numberOfTimes} onChange={this.numberOfTimesChange} min="1" max="10"/>
+						 </div>
+     			</FormGroup>
+				 </form>
      			{this.searchStops() === null ? 'Too many mathes.' : this.searchStops().map(stop =>
 				 <div><div key = {stop.gtfsId} onClick={() => this.showNextBusses(stop)}>{stop.name}, {stop.gtfsId}</div><Button onClick = {() => this.addStoptoFavourites(stop)}>Add to favourite stops</Button></div>)}
      			<div></div>
@@ -87,7 +94,8 @@ const mapStateToProps = (state) => {
 	return {
 		allStops: state.allStops,
 		filter: state.filter,
-		schedules: state.schedules
+		schedules: state.schedules,
+		user: state.user
 	}
 }
 
@@ -95,7 +103,8 @@ const mapDispatchToProps = {
 	newFilterStop,
 	addSchedule,
 	addPointToMap,
-	notify
+	notify,
+	addUser
 }
 
 const ConnectedSearchStops = connect(mapStateToProps, mapDispatchToProps)(SearchStops)

@@ -3,7 +3,7 @@ import L from 'leaflet'
 import vectorGrid from 'leaflet.vectorgrid' // eslint-disable-line
 import polyline from 'polyline'
 import GeoService from '../services/GeoService'
-import { addPointToMap, deleteAllFromMap } from '../actions/actionCreators'
+import { addPointToMap, deleteAllFromMap, notify } from '../actions/actionCreators'
 
 class Map extends Component {
 
@@ -77,12 +77,21 @@ class Map extends Component {
 		})
 
 		map.on('click', (event) => {
-			GeoService.getDestination(event.latlng.lat, event.latlng.lng, 1).then(response => {
-				this.props.store.dispatch(addPointToMap({ lat: event.latlng.lat,
-					lon: event.latlng.lng,
-					name: response.features[0].properties.name + ', ' + response.features[0].properties.neighbourhood + ', ' + response.features[0].properties.postalcode + ', ' + response.features[0].properties.localadmin + ', ' + response.features[0].properties.region }
-				))}
-			)
+			try {
+				GeoService.getDestination(event.latlng.lat, event.latlng.lng, 1).then(response => {
+					console.log(response)
+					if(response.features.length > 0) {
+						this.props.store.dispatch(addPointToMap({ lat: event.latlng.lat,
+							lon: event.latlng.lng,
+							name: response.features[0].properties.name + ', ' + response.features[0].properties.neighbourhood + ', ' + response.features[0].properties.postalcode + ', ' + response.features[0].properties.localadmin + ', ' + response.features[0].properties.region }
+						))} else {
+						this.props.store.dispatch(notify('Failed to get the location.', 'danger'))
+					}
+				}
+				)
+			} catch (error) {
+				this.props.store.dispatch(notify('Failed to get the location.', 'danger'))
+			}
 		})
 
 		this.props.store.subscribe(() => {

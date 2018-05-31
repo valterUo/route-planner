@@ -3,8 +3,8 @@ import RouteService from '../services/RouteService'
 import { convertTimeFromSec } from '../converters/timeConverter'
 import LocationService from '../services/LocationService'
 import { connect } from 'react-redux'
-import { addPointToMap, addRouteNonPolyline, addAllLines, newFilterLine } from '../actions/actionCreators'
-import { Button } from 'react-bootstrap'  // eslint-disable-line
+import { addPointToMap, addRouteNonPolyline, addAllLines, newFilterLine, addUser } from '../actions/actionCreators'
+import { Button, FormGroup, FormControl } from 'react-bootstrap'  // eslint-disable-line
 
 class SearchSchedulesForLine extends React.Component {
 	constructor(props) {
@@ -77,6 +77,9 @@ class SearchSchedulesForLine extends React.Component {
 
     addLinetoFavourites = (line) => {
     	LocationService.addLinetoFavourites(line)
+    	const newUser = this.props.user
+    	newUser.locations.favouriteLines = newUser.locations.favouriteLines.concat(line)
+    	this.props.addUser(newUser)
     }
 
     render() {
@@ -84,8 +87,12 @@ class SearchSchedulesForLine extends React.Component {
     		<div>
     			<h3>Search timetables for each stop for the given public transport line</h3>
     			<form>
-    				<input type= "text" value={this.state.line} onChange={this.lineOnChange}></input>
-    				<div> Number of timetables: <input type="number" value={this.state.amountOfSchedules} onChange={this.amountOfSchedulesOnChange} min="2" max="10"></input></div>
+    				<FormGroup>
+    				<FormControl style={{ width: 200 }} type= "text" value={this.state.line} onChange={this.lineOnChange}/>
+    				<div>
+						Number of timetables: <FormControl style={{ width: 80 }} type="number" value={this.state.amountOfSchedules} onChange={this.amountOfSchedulesOnChange} min="2" max="10"/>
+    					</div>
+    			</FormGroup>
     			</form>
     			<div>
     				{this.linesToShow() === null ? 'Too many mathces.' : this.linesToShow().map(line => <div key={line.id}><div onClick={() => this.handelPatternsChange(line.patterns)}> {line.shortName}, {line.longName}</div><Button onClick = {() => this.addLinetoFavourites(line)}>Add the line to favourites</Button></div>)}
@@ -105,7 +112,8 @@ class SearchSchedulesForLine extends React.Component {
 const mapStateToProps = (state) => {
 	return {
 		lines: state.lines,
-		filter: state.filter
+		filter: state.filter,
+		user: state.user
 	}
 }
 
@@ -113,7 +121,8 @@ const mapDispatchToProps = {
 	addPointToMap,
 	addRouteNonPolyline,
 	addAllLines,
-	newFilterLine
+	newFilterLine,
+	addUser
 }
 
 const ConnectedSearchSchedulesForLine = connect(mapStateToProps, mapDispatchToProps)(SearchSchedulesForLine)

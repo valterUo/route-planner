@@ -3,7 +3,7 @@ import LoginService from '../services/LoginService'
 import LocationService from '../services/LocationService'
 import { addPointToMap, removeAllLayers, addUser, deleteUser, notify } from '../actions/actionCreators'
 import { connect } from 'react-redux'
-import { Button } from 'react-bootstrap'  // eslint-disable-line
+import { Button, FormGroup, FormControl } from 'react-bootstrap'  // eslint-disable-line
 
 class LoginForm extends React.Component {
 	constructor(props) {
@@ -78,15 +78,17 @@ class LoginForm extends React.Component {
     		<div>
     			<h4>Log in</h4>
     			<form onSubmit = {this.handleSubmit}>
+    				<FormGroup style={{ width: 350 }}>
     				<div>
             Username
-    					<input type="text" value = {this.state.username} onChange = {this.handleUsernameChange}/>
+    					<FormControl type="text" value = {this.state.username} onChange = {this.handleUsernameChange}/>
     				</div>
     				<div>
             Password
-    					<input type= "password" value = {this.state.password} onChange = {this.handlePasswordChange}/>
+    					<FormControl type= "password" value = {this.state.password} onChange = {this.handlePasswordChange}/>
     				</div>
     				<Button type="submit">Log in</Button>
+    				</FormGroup>
     			</form>
     		</div>
     	)

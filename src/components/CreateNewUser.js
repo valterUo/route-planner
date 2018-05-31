@@ -1,6 +1,8 @@
 import React from 'react'
 import UserService from '../services/UserService'
-import { Button } from 'react-bootstrap'  // eslint-disable-line
+import { Button, FormGroup, FormControl } from 'react-bootstrap'  // eslint-disable-line
+import { connect } from 'react-redux'
+import { notify } from '../actions/actionCreators'
 
 class CreateNewUser extends React.Component {
 	constructor(props) {
@@ -16,6 +18,7 @@ class CreateNewUser extends React.Component {
     	const name = event.target.name
       	this.setState({ [name]: event.target.value })
     }
+
     createNewUser = async (event) => {
     	event.preventDefault()
     	try {
@@ -24,38 +27,57 @@ class CreateNewUser extends React.Component {
     			password: this.state.password,
     			name: this.state.name
     		})
+    		if (newUser.data.username) {
+    		this.props.notify('New user "' + this.state.username + '" has been created!', 'success')
     		this.setState({
     			username: '',
     			password: '',
     			name: ''
-    		})
-    		console.log(newUser)
+    			})
+    		} else {
+    			this.props.notify('Failed to create a new user! Password must be at least 8 characters and username must be unique.', 'danger')
+    		}
     	} catch (error) {
     		console.log(error)
+    		this.props.notify('Failed to create a new user! Password must be at least 8 characters and username must be unique.', 'danger')
     	}
     }
     render() {
     	return(
     		<div>
-    			<h4>Create new user</h4>
+    			<h4>Sign up</h4>
     			<form onSubmit = {this.createNewUser}>
+    				<FormGroup style={{ width: 350 }}>
     				<div>
                     Name
-    					<input name = "name" type="text" value = {this.state.name} onChange = {this.handleEventChanges}/>
+    					<FormControl name = "name" type="text" value = {this.state.name} onChange = {this.handleEventChanges}/>
     				</div>
     				<div>
                     Userame
-    					<input name = "username" type="text" value = {this.state.username} onChange = {this.handleEventChanges}/>
+    					<FormControl name = "username" type="text" value = {this.state.username} onChange = {this.handleEventChanges}/>
     				</div>
     				<div>
                     Password
-    					<input name = "password" type="password" value = {this.state.password} onChange = {this.handleEventChanges}/>
+    					<FormControl name = "password" type="password" value = {this.state.password} onChange = {this.handleEventChanges}/>
     				</div>
     				<Button type="submit">Sign up</Button>
+    				</FormGroup>
     			</form>
     		</div>
     	)
     }
 }
 
-export default CreateNewUser
+const mapStateToProps = (state) => {
+	return {
+		notification: state.notification
+	}
+}
+
+const mapDispatchToProps = {
+	notify
+}
+
+const ConnectedCreateNewUser = connect(mapStateToProps, mapDispatchToProps)(CreateNewUser)
+
+export default ConnectedCreateNewUser

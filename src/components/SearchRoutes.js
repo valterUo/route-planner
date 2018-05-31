@@ -2,8 +2,8 @@ import React from 'react'
 import RouteService from '../services/RouteService'
 import { connect } from 'react-redux'
 import { getToday, getTimefromDate, getDayFromDate } from '../converters/timeConverter'
-import { newFilterFrom, newFilterTo, addRoutes, readyToSearch } from '../actions/actionCreators'
-import { Checkbox, FormGroup, FormControl, ControlLabel, Button } from 'react-bootstrap'  // eslint-disable-line
+import { newFilterFrom, newFilterTo, addRoutes, readyToSearch, notify } from '../actions/actionCreators'
+import { Checkbox, FormGroup, FormControl, ControlLabel, Button, ButtonGroup } from 'react-bootstrap'  // eslint-disable-line
 
 class SearchRoutes extends React.Component {
 	constructor(props) {
@@ -129,10 +129,19 @@ class SearchRoutes extends React.Component {
       	if(this.state.rail === true) {modes = modes +  'RAIL,'}
       	if(this.state.ferry === true) {modes = modes +  'FERRY,'}
       	if(this.state.tram === true) {modes = modes +  'TRAM,'}
-      	const { fromPlace, fromLat, fromLon, toPlace, toLat, toLon, date, time, numItineraries } = this.state
-      	RouteService.planRoute(fromPlace, fromLat, fromLon, toPlace, toLat, toLon, modes, date, time, numItineraries).then(response =>
-      		this.props.addRoutes(response.data.plan.itineraries)
-      	)
+		  const { fromPlace, fromLat, fromLon, toPlace, toLat, toLon, date, time, numItineraries } = this.state
+      	try {
+			  console.log('trying...')
+      	RouteService.planRoute(fromPlace, fromLat, fromLon, toPlace, toLat, toLon, modes, date, time, numItineraries).then(response => {
+      			if (response.data.plan.itineraries.length > 0) {
+      				this.props.addRoutes(response.data.plan.itineraries)
+      			} else {
+      				this.props.notify('No routes! Check the locations.', 'danger')
+      			}
+      	})} catch (error) {
+			  console.log(error)
+			  this.props.notify('Route planning failed! Check the locations.', 'danger')
+		  }
       }
 
       handleSearchDataChange = () => {
@@ -202,10 +211,10 @@ class SearchRoutes extends React.Component {
 						  <Button type="submit" value="Search">Search</Button>
       				</form>
       			</div>
-      			<p style ={{ visibility: this.props.routes[0] === undefined ? 'hidden' : 'visible' }}>
+      			<ButtonGroup style ={{ visibility: this.props.routes[0] === undefined ? 'hidden' : 'visible' }}>
       				<Button type="button" value="Previous" onClick={this.searchPrevious}>Previous</Button>
       				<Button type="button" value="Next" onClick={this.searchNext}>Next</Button>
-      			</p>
+      			</ButtonGroup>
       		</div>
       	)
       }
@@ -224,7 +233,8 @@ const mapDispatchToProps = {
 	newFilterFrom,
 	newFilterTo,
 	addRoutes,
-	readyToSearch
+	readyToSearch,
+	notify
 }
 
 const ConnectedSearchRoutes = connect(mapStateToProps, mapDispatchToProps)(SearchRoutes)

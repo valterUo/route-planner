@@ -9,7 +9,6 @@ const setToken = (newToken) => {
 const getLocation = async (id) => {
 	try {
 		const location = await axios.get(baseUrl + '/' + id)
-		console.log(location)
 		return location.data
 	} catch (error) {
 		console.log(error)
@@ -28,8 +27,7 @@ const addPointToFavourites = async (point) => {
 		favouriteStops: null,
 		favouriteLines: null,
 	  }
-	  const location = await axios.post(baseUrl, newLocation, config)
-	  console.log(location)
+	  await axios.post(baseUrl, newLocation, config)
 }
 
 const makeHomeLocation = async (point) => {
@@ -44,8 +42,7 @@ const makeHomeLocation = async (point) => {
 		favouriteStops: null,
 		favouriteLines: null,
 	  }
-	  const location = await axios.post(baseUrl, newLocation, config)
-	  console.log(location)
+	  await axios.post(baseUrl, newLocation, config)
 }
 
 const addLinetoFavourites = async (line) => {
@@ -59,8 +56,7 @@ const addLinetoFavourites = async (line) => {
 		favouriteStops: null,
 		favouriteLines: line,
 	  }
-	  const location = await axios.post(baseUrl, newLocation, config)
-	  console.log(location)
+	  await axios.post(baseUrl, newLocation, config)
 }
 
 const addStoptoFavourites = async (stop) => {
@@ -74,8 +70,7 @@ const addStoptoFavourites = async (stop) => {
 		favouriteStops: stop,
 		favouriteLines: null,
 	  }
-	const location = await axios.post(baseUrl, newLocation, config)
-	console.log(location)
+	await axios.post(baseUrl, newLocation, config)
 }
 
 export default { setToken, makeHomeLocation, addStoptoFavourites,  addLinetoFavourites, addPointToFavourites, getLocation }

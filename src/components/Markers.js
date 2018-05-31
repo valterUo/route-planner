@@ -1,6 +1,6 @@
 import React from 'react'
 import LocationService from '../services/LocationService'
-import { addSearchDataTo, addSearchDataFrom, removeAllLayers, notify } from '../actions/actionCreators'
+import { addSearchDataTo, addSearchDataFrom, removeAllLayers, notify, addUser } from '../actions/actionCreators'
 import { Button, Table } from 'react-bootstrap'  // eslint-disable-line
 
 class Markers extends React.Component {
@@ -34,16 +34,22 @@ class Markers extends React.Component {
 	addPointToFavourites = (point) => {
 		this.props.store.dispatch(notify('You added a location to favourites.', 'info'))
 		LocationService.addPointToFavourites(point)
+		const newUser = this.props.store.getState().user
+		newUser.locations.favouriteLocations = newUser.locations.favouriteLocations.concat(point)
+		this.props.store.dispatch(addUser(newUser))
 	}
 
 	makeHomeLocation = (point) => {
 		this.props.store.dispatch(notify('You updated your homelocation.', 'info'))
 		LocationService.makeHomeLocation(point)
+		const newUser = this.props.store.getState().user
+		newUser.locations.homeLocation = point
+		this.props.store.dispatch(addUser(newUser))
 	}
 
 	render() {
     	this.props.store.subscribe(() => {
-			if (this.props.store.getState().user !== undefined) {
+			if (this.props.store.getState().user.username !== undefined) {
 				this.toggleButtonsVisibility(true)
 			} else {
 				this.toggleButtonsVisibility(false)

@@ -12,4 +12,5 @@
 | 16.4. | 12  | User account control in backend, ESlint, crypted passwords and token authentication, login and sing up features, MongoDB for user data |
 | 12.5. | 8 | More features to users (home locations, favourite locations, favourite lines, favourite stops), refactoring (connect) |
 | 29.5. | 10 | React router (router broke the map), Boostrap, Notifications (at last), fixing some bugs |
-| Total: | 92  | credits: ~ 5.2 |
+| 31.5. | 3 | Adding some graphical outlook and fixing bugs |
+| Total: | 99  | credits: ~ 5.66 |
